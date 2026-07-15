@@ -563,6 +563,160 @@ input[type=range]#t-range{
   }
 }
 
+/* ---------- 조작 연출 레이어 ---------- */
+#act-layer{
+  position:fixed;inset:0;z-index:55;display:none;align-items:center;justify-content:center;
+  background:rgba(8,4,2,.92);backdrop-filter:blur(3px);padding:20px;
+}
+#act-layer.on{display:flex}
+.act-box{width:min(92vw,420px);text-align:center;animation:fadeIn .5s}
+.act-title{
+  font-family:'Nanum Gothic Coding',monospace;font-size:12.5px;letter-spacing:.15em;
+  color:var(--glitch);margin-bottom:18px;line-height:1.9;word-break:keep-all;min-height:44px;
+}
+.act-title.done{color:var(--ok)}
+
+/* ④ 열쇠 돌리기 */
+.key-pad{
+  position:relative;width:240px;height:240px;margin:0 auto;border-radius:50%;
+  background:radial-gradient(circle at 35% 28%, #43301b, #170f09 72%);
+  border:2px solid rgba(201,162,75,.45);touch-action:none;
+  box-shadow:inset 0 0 40px rgba(0,0,0,.8), 0 10px 30px rgba(0,0,0,.6);
+}
+.key-pad svg.key{position:absolute;inset:26px;pointer-events:none}
+.key-ring{position:absolute;inset:4px;pointer-events:none}
+.keyhole{
+  position:absolute;left:50%;top:50%;width:14px;height:34px;transform:translate(-50%,-56%);
+  background:#000;border-radius:50% 50% 30% 30%;box-shadow:0 0 10px #000;
+}
+
+/* ③ 벽돌 밀기 */
+.push-wall{
+  position:relative;width:264px;height:176px;margin:0 auto;border-radius:4px;overflow:hidden;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 40px, #1c0d07 40px 44px),
+    repeating-linear-gradient(90deg, transparent 0 84px, #1c0d07 84px 88px),
+    linear-gradient(#7c3122,#622517);
+  box-shadow:inset 0 0 40px rgba(0,0,0,.65);
+  touch-action:none;
+}
+.loose-brick{
+  position:absolute;left:88px;top:44px;width:84px;height:40px;cursor:pointer;
+  background:linear-gradient(#8f3a28,#77301f);
+  border:1px solid rgba(233,217,174,.35);
+  box-shadow:0 0 14px rgba(233,217,174,.35), inset 0 3px 4px rgba(255,255,255,.12);
+  transition:box-shadow .2s;
+  animation:loosePulse 1.6s ease-in-out infinite;
+}
+@keyframes loosePulse{0%,100%{box-shadow:0 0 8px rgba(233,217,174,.25)}50%{box-shadow:0 0 18px rgba(233,217,174,.55)}}
+.loose-brick.pushing{animation:none}
+.wall-map{
+  position:absolute;left:78px;top:30px;width:104px;height:70px;opacity:0;transform:scale(.6);
+  background:linear-gradient(150deg,#efe2bd,#d8c28c);border-radius:2px;
+  box-shadow:0 6px 18px rgba(0,0,0,.7);transition:all .8s ease .3s;
+  display:flex;align-items:center;justify-content:center;
+}
+.wall-map.reveal{opacity:1;transform:scale(1) rotate(-4deg)}
+.push-gauge{height:12px;border:1px solid rgba(233,217,174,.35);border-radius:6px;overflow:hidden;
+  background:rgba(0,0,0,.5);margin:16px auto 0;width:264px}
+.push-gauge i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--brick),var(--gold));transition:width .08s}
+
+/* ① 금고 다이얼 */
+.dial-pad{
+  position:relative;width:250px;height:250px;margin:0 auto;touch-action:none;
+  border-radius:50%;background:radial-gradient(circle at 38% 30%, #2a1c10, #120b06 75%);
+  border:3px solid rgba(201,162,75,.5);
+  box-shadow:inset 0 0 40px rgba(0,0,0,.8), 0 10px 30px rgba(0,0,0,.6);
+}
+.dial-disc{position:absolute;inset:0;border-radius:50%;will-change:transform}
+.dial-disc::before{
+  content:"";position:absolute;inset:34px;border-radius:50%;
+  border:1.5px solid rgba(201,162,75,.28);
+}
+.dial-disc .spoke{position:absolute;inset:0;pointer-events:none}
+.dial-disc .spoke b{
+  position:absolute;top:9px;left:50%;transform:translateX(-50%);
+  font-family:'Nanum Gothic Coding',monospace;font-size:17px;font-weight:700;
+  color:#e9d9ae;text-shadow:0 1px 2px rgba(0,0,0,.8);
+}
+.dial-disc .spoke::after{
+  content:"";position:absolute;top:31px;left:50%;width:2px;height:9px;
+  background:rgba(233,217,174,.5);transform:translateX(-50%);
+}
+.dial-face{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:70px;height:70px;border-radius:50%;
+  background:#241811;border:2px solid rgba(201,162,75,.55);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Nanum Gothic Coding',monospace;font-size:24px;font-weight:700;color:#c9a24b;
+  box-shadow:inset 0 0 14px rgba(0,0,0,.7);
+}
+.dial-pointer{
+  position:absolute;top:-6px;left:50%;transform:translateX(-50%);z-index:2;
+  width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
+  border-top:14px solid var(--gold);filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));
+}
+.dial-step{
+  font-family:'Nanum Gothic Coding',monospace;font-size:12px;color:var(--paper-dim);
+  margin-top:14px;letter-spacing:.15em;
+}
+.dial-step b{color:var(--gold);font-size:15px}
+
+/* ② 명부 태우기 */
+.burn-scene{position:relative;height:360px;margin:0 auto;touch-action:none;user-select:none}
+.burn-paper{
+  position:absolute;left:50%;top:0;transform:translateX(-50%);width:212px;height:246px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(43,29,18,.08) 22px 23px),
+    linear-gradient(160deg,#efe2bd,#dcc794);
+  color:#3a2718;border-radius:2px;box-shadow:0 10px 26px rgba(0,0,0,.6);
+  padding:14px 12px;text-align:left;
+}
+.burn-paper .bp-title{
+  font-family:'Nanum Myeongjo',serif;font-weight:800;font-size:15px;text-align:center;
+  letter-spacing:.3em;border-bottom:1.5px solid #3a2718;padding-bottom:6px;margin-bottom:8px;
+}
+.burn-paper .bp-names{
+  font-family:'Nanum Myeongjo',serif;font-size:12.5px;line-height:1.95;letter-spacing:.1em;
+  column-count:2;column-gap:10px;
+}
+.ember{
+  position:absolute;border-radius:50%;pointer-events:none;
+  border:3px solid rgba(255,140,40,.9);
+  box-shadow:0 0 18px 6px rgba(255,120,20,.55), inset 0 0 16px rgba(255,160,60,.5);
+  transform:translate(-50%,-50%);opacity:0;
+}
+.match{
+  position:absolute;left:14px;bottom:14px;width:96px;height:30px;cursor:grab;z-index:3;
+}
+.match .stick{
+  position:absolute;left:0;top:12px;width:78px;height:7px;border-radius:3px;
+  background:linear-gradient(#e8d3a8,#c9ad76);
+}
+.match .head{
+  position:absolute;right:4px;top:8px;width:16px;height:15px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #d95a3a, #8c2418);
+}
+.match .flame{
+  position:absolute;right:-2px;top:-16px;width:20px;height:28px;display:none;
+  background:radial-gradient(ellipse at 50% 85%, #fff2b8, #ffb04a 45%, #ff7a1e 70%, transparent 78%);
+  border-radius:50% 50% 46% 46% / 62% 62% 38% 38%;
+  filter:blur(.4px);
+}
+.match.lit .flame{display:block;animation:flick .12s infinite alternate}
+@keyframes flick{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.12,1.28) rotate(3deg)}}
+.strike-strip{
+  position:absolute;right:10px;bottom:12px;width:150px;height:30px;border-radius:3px;
+  background:
+    repeating-linear-gradient(115deg, rgba(0,0,0,.35) 0 2px, transparent 2px 5px),
+    linear-gradient(#5e4a38,#43331f);
+  border:1px solid rgba(233,217,174,.3);
+}
+.strike-strip::after{
+  content:"성냥을 여기 문질러라";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:rgba(233,217,174,.55);letter-spacing:.1em;
+}
+
 /* 접근성 · 모션 축소 */
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
@@ -1504,8 +1658,9 @@ function checkAnswer(i){
 
   if(isCorrect(i, val)){
     sfx.ok();
-    fb.className='feedback good'; fb.textContent='자물쇠가 열렸다!';
-    stageClear(i);
+    fb.className='feedback good'; fb.textContent='자물쇠가 풀린다…!';
+    input.disabled = true; $('#submit'+i).disabled = true;
+    runStageAction(i).then(()=>stageClear(i));
   } else {
     state.wrong[i]++;
     sfx.bad(); buzz(120);
@@ -1643,6 +1798,320 @@ $('#btn-mute').addEventListener('click', ()=>{
 $('#btn-back').addEventListener('click', ()=>{
   if(state.stage >= 0) reviewBriefing(state.stage);
 });
+</script>
+
+<script>
+/* ================================================================
+   조작 연출 4종 — 정답 입력 직후, 손으로 완성하는 성공의 순간
+   1막 열쇠 돌리기 · 2막 벽돌 밀기 · 3막 금고 다이얼 · 4막 명부 소각
+   ================================================================ */
+const actLayer = document.createElement('div');
+actLayer.id = 'act-layer';
+document.body.appendChild(actLayer);
+
+async function runStageAction(i){
+  actLayer.classList.add('on');
+  const acts = [actKey, actBrick, actDial, actBurn];
+  await acts[i]();
+  await new Promise(r=>setTimeout(r, 350));
+  actLayer.classList.remove('on');
+}
+
+/* 공통: 요소 중심 기준 포인터 각도(도) */
+function angleOf(el, e){
+  const r = el.getBoundingClientRect();
+  return Math.atan2(e.clientY - (r.top + r.height/2), e.clientX - (r.left + r.width/2)) * 180 / Math.PI;
+}
+function normDeg(d){ while(d > 180) d -= 360; while(d < -180) d += 360; return d; }
+
+/* ---------- 1막 : 놋쇠 열쇠 돌리기 ---------- */
+function actKey(){
+  return new Promise(res=>{
+    actLayer.innerHTML = `
+      <div class="act-box">
+        <div class="act-title">암호가 맞았다! 현관문에 놋쇠 열쇠가 꽂혀 있다.<br>열쇠를 잡고 시계 방향으로 한 바퀴 돌려라.</div>
+        <div class="key-pad" id="key-pad">
+          <svg class="key-ring" viewBox="0 0 240 240">
+            <circle cx="120" cy="120" r="112" fill="none" stroke="rgba(233,217,174,.15)" stroke-width="5"/>
+            <circle id="key-prog" cx="120" cy="120" r="112" fill="none" stroke="#c9a24b" stroke-width="5"
+              stroke-linecap="round" stroke-dasharray="703.7" stroke-dashoffset="703.7"
+              transform="rotate(-90 120 120)"/>
+          </svg>
+          <div class="keyhole"></div>
+          <svg class="key" id="key-rot" viewBox="-60 -60 120 120">
+            <g stroke="#c9a24b" stroke-width="7" fill="none" stroke-linecap="round">
+              <circle cx="0" cy="-30" r="15"/>
+              <line x1="0" y1="-15" x2="0" y2="40"/>
+              <line x1="0" y1="40" x2="15" y2="40"/>
+              <line x1="0" y1="27" x2="10" y2="27"/>
+            </g>
+          </svg>
+        </div>
+      </div>`;
+    const pad = document.getElementById('key-pad');
+    const rot = document.getElementById('key-rot');
+    const prog = document.getElementById('key-prog');
+    const title = actLayer.querySelector('.act-title');
+    let last = null, acc = 0, done = false, lastClick = 0;
+    function move(e){
+      if(done || last === null) return;
+      const a = angleOf(pad, e);
+      const d = normDeg(a - last); last = a;
+      acc = Math.max(0, acc + (d > 0 ? d : d * 0.5));   /* 역방향은 절반만 풀린다 */
+      rot.style.transform = `rotate(${acc}deg)`;
+      prog.setAttribute('stroke-dashoffset', 703.7 * Math.max(0, 1 - acc/340));
+      if(acc - lastClick > 30){ lastClick = acc; tone(500 + acc, .03, 'square', .05); buzz(12); }
+      if(acc >= 340){
+        done = true;
+        tone(160,.3,'square',.12); tone(110,.5,'sine',.12,.2); buzz([90,60,160]);
+        title.textContent = '철컥――― 돌쩌귀가 무겁게 돌아가며, 문이 열렸다.';
+        title.classList.add('done');
+        setTimeout(res, 1300);
+      }
+    }
+    pad.addEventListener('pointerdown', e=>{ last = angleOf(pad, e); pad.setPointerCapture(e.pointerId); });
+    pad.addEventListener('pointermove', move);
+    pad.addEventListener('pointerup', ()=>{ last = null; });
+  });
+}
+
+/* ---------- 2막 : 헐거운 벽돌 밀기 ---------- */
+function actBrick(){
+  return new Promise(res=>{
+    actLayer.innerHTML = `
+      <div class="act-box">
+        <div class="act-title">벽난로 옆, 유난히 헐거워 보이는 벽돌 하나.<br>벽돌을 꾹 누른 채 버텨라!</div>
+        <div class="push-wall">
+          <div class="wall-map" id="wall-map">
+            <svg viewBox="0 0 104 70" width="104" height="70">
+              <path d="M12 56 L34 40 L30 22 L56 26 L74 14 L88 20" fill="none" stroke="#8a3524" stroke-width="2.5" stroke-dasharray="5 4"/>
+              <text x="88" y="16" font-size="12" fill="#8a3524" font-weight="bold">✕</text>
+              <text x="52" y="64" font-size="9" fill="#6b4f2a" text-anchor="middle" letter-spacing="2">密室의 地圖</text>
+            </svg>
+          </div>
+          <div class="loose-brick" id="loose-brick"></div>
+        </div>
+        <div class="push-gauge"><i id="push-fill"></i></div>
+      </div>`;
+    const brick = document.getElementById('loose-brick');
+    const fill = document.getElementById('push-fill');
+    const title = actLayer.querySelector('.act-title');
+    let p = 0, hold = null, decay = null, done = false;
+    function render(){
+      fill.style.width = p + '%';
+      brick.style.transform = `scale(${1 - p*0.0022}) translateY(${p*0.03}px)`;
+      brick.style.filter = `brightness(${1 - p*0.004})`;
+    }
+    function start(e){
+      if(done) return;
+      brick.classList.add('pushing');
+      brick.setPointerCapture(e.pointerId);
+      clearInterval(decay);
+      hold = setInterval(()=>{
+        p = Math.min(100, p + 2.4); render();
+        if(p % 20 < 2.4) { tone(90 + p, .05, 'sawtooth', .05); buzz(10); }
+        if(p >= 100){ finish(); }
+      }, 40);
+    }
+    function stop(){
+      clearInterval(hold);
+      if(done) return;
+      decay = setInterval(()=>{ p = Math.max(0, p - 1.6); render(); if(p<=0) clearInterval(decay); }, 40);
+    }
+    function finish(){
+      done = true; clearInterval(hold);
+      tone(70,.5,'sawtooth',.1); buzz([60,40,60,40,140]);
+      brick.style.transition = 'all .7s ease';
+      brick.style.transform = 'scale(.7)'; brick.style.opacity = '0';
+      document.getElementById('wall-map').classList.add('reveal');
+      sfx.found();
+      title.textContent = '벽돌이 스르륵 밀려나고 ― 밀실의 지도가 모습을 드러냈다!';
+      title.classList.add('done');
+      setTimeout(res, 1700);
+    }
+    brick.addEventListener('pointerdown', start);
+    brick.addEventListener('pointerup', stop);
+    brick.addEventListener('pointercancel', stop);
+  });
+}
+
+/* ---------- 3막 : 금고 다이얼 (좌로 4, 우로 8) ---------- */
+function actDial(){
+  return new Promise(res=>{
+    let nums = '';
+    for(let n=0; n<10; n++){
+      nums += `<i class="spoke" style="transform:rotate(${n*36}deg)"><b>${n}</b></i>`;
+    }
+    actLayer.innerHTML = `
+      <div class="act-box">
+        <div class="act-title">마루 밑, 육중한 철제 금고. 다이얼 자물쇠다.<br>은우의 전보 ― 「함성의 날짜가 열쇠요!」</div>
+        <div class="dial-pad" id="dial-pad">
+          <div class="dial-pointer"></div>
+          <div class="dial-disc" id="dial-rot">${nums}</div>
+          <div class="dial-face" id="dial-face">0</div>
+        </div>
+        <div class="dial-step" id="dial-step">① 다이얼을 <b>왼쪽</b>으로 돌려 <b>4</b>에 맞춰라</div>
+      </div>`;
+    const pad = document.getElementById('dial-pad');
+    const rotEl = document.getElementById('dial-rot');
+    const face = document.getElementById('dial-face');
+    const step = document.getElementById('dial-step');
+    const title = actLayer.querySelector('.act-title');
+    const phases = [
+      { dir:-1, target:4, label:'② 좋다! 이제 <b>오른쪽</b>으로 돌려 <b>8</b>' },
+      { dir: 1, target:8, label:'' }
+    ];
+    let ph = 0, rot = 0, last = null, lastDir = 0, holdT = null, done = false, lastTick = 0;
+    function topValue(){ return ((Math.round(-rot/36) % 10) + 10) % 10; }
+    function onTarget(){
+      const snap = Math.abs(normDeg(rot + phases[ph].target * 36)) < 10;
+      return snap && topValue() === phases[ph].target && lastDir === phases[ph].dir;
+    }
+    function move(e){
+      if(done || last === null) return;
+      const a = angleOf(pad, e);
+      let d = normDeg(a - last); last = a;
+      if(d !== 0) lastDir = d > 0 ? 1 : -1;
+      /* 진행 방향이 아니면 뻑뻑하게 */
+      if(lastDir !== phases[ph].dir) d *= 0.4;
+      rot += d;
+      rotEl.style.transform = `rotate(${rot}deg)`;
+      face.textContent = topValue();
+      if(Math.abs(rot - lastTick) > 12){ lastTick = rot; tone(700,.02,'square',.04); buzz(8); }
+      if(onTarget()){
+        if(!holdT) holdT = setTimeout(lockStep, 550);
+      } else if(holdT){ clearTimeout(holdT); holdT = null; }
+    }
+    function lockStep(){
+      holdT = null;
+      tone(300,.12,'square',.1); buzz([70,40,70]);
+      if(ph === 0){
+        ph = 1;
+        step.innerHTML = phases[0].label;
+      } else {
+        done = true;
+        tone(140,.4,'square',.12); tone(90,.6,'sine',.1,.25); buzz([120,60,200]);
+        title.textContent = '철커덩! 금고가 열렸다 ― 「검거 명부」를 손에 넣었다!';
+        title.classList.add('done');
+        step.innerHTML = '📜 極秘 · 檢擧 名簿';
+        setTimeout(res, 1500);
+      }
+    }
+    pad.addEventListener('pointerdown', e=>{ last = angleOf(pad, e); pad.setPointerCapture(e.pointerId); });
+    pad.addEventListener('pointermove', move);
+    pad.addEventListener('pointerup', ()=>{ last = null; });
+  });
+}
+
+/* ---------- 4막 : 성냥을 그어 명부를 태워라 ---------- */
+function actBurn(){
+  return new Promise(res=>{
+    const names = ['김만석','박연화','정도윤','이한매','최성려','오태산','한벽오','서일강','임초향','문경담','유해송','강두철'];
+    actLayer.innerHTML = `
+      <div class="act-box">
+        <div class="act-title">은우 ― 「이제 이 명부만 없으면, 아무도 잡혀가지 않소.」<br>성냥을 마찰판에 문질러 불을 붙여라!</div>
+        <div class="burn-scene" id="burn-scene">
+          <div class="burn-paper" id="burn-paper">
+            <div class="bp-title">檢擧 名簿</div>
+            <div class="bp-names">${names.map(n=>'一. '+n).join('<br>')}<br>外 二十五名</div>
+          </div>
+          <div class="ember" id="ember"></div>
+          <div class="match" id="match">
+            <div class="stick"></div><div class="head"></div><div class="flame"></div>
+          </div>
+          <div class="strike-strip" id="strike"></div>
+        </div>
+      </div>`;
+    const scene = document.getElementById('burn-scene');
+    const match = document.getElementById('match');
+    const paper = document.getElementById('burn-paper');
+    const strike = document.getElementById('strike');
+    const ember = document.getElementById('ember');
+    const title = actLayer.querySelector('.act-title');
+    let dragging = false, offX = 0, offY = 0;
+    let lit = false, friction = 0, lastX = null, lastT = 0;
+    let burning = false, doneAct = false;
+
+    function headRect(){
+      const r = match.getBoundingClientRect();
+      return { x: r.right - 12, y: r.top + 15 };
+    }
+    function inside(rect, x, y){ return x>=rect.left && x<=rect.right && y>=rect.top && y<=rect.bottom; }
+
+    match.addEventListener('pointerdown', e=>{
+      dragging = true;
+      const r = match.getBoundingClientRect();
+      offX = e.clientX - r.left; offY = e.clientY - r.top;
+      match.setPointerCapture(e.pointerId);
+    });
+    match.addEventListener('pointermove', e=>{
+      if(!dragging || doneAct) return;
+      const sr = scene.getBoundingClientRect();
+      match.style.left = (e.clientX - sr.left - offX) + 'px';
+      match.style.top = (e.clientY - sr.top - offY) + 'px';
+      match.style.bottom = 'auto';
+      const h = headRect();
+      if(!lit){
+        /* 마찰판 위에서 빠르게 문지르면 점화 */
+        if(inside(strike.getBoundingClientRect(), h.x, h.y)){
+          const now = performance.now();
+          if(lastX !== null){
+            const speed = Math.abs(e.clientX - lastX) / Math.max(1, now - lastT);
+            if(speed > 0.35){
+              friction += speed * 8;
+              tone(120 + Math.random()*200, .04, 'sawtooth', .06);
+              if(friction > 26) ignite();
+            }
+          }
+          lastX = e.clientX; lastT = now;
+        } else { lastX = null; }
+      } else if(!burning){
+        /* 불붙은 성냥을 명부에 갖다 대면 발화 */
+        if(inside(paper.getBoundingClientRect(), h.x, h.y - 14)) startBurn(h.x, h.y - 14);
+      }
+    });
+    match.addEventListener('pointerup', ()=>{ dragging = false; lastX = null; });
+
+    function ignite(){
+      lit = true;
+      match.classList.add('lit');
+      tone(900,.15,'sawtooth',.1); tone(500,.4,'sawtooth',.05,.05); buzz([50,30,90]);
+      title.textContent = '치익――― 불이 붙었다! 불꽃을 명부에 갖다 대라.';
+    }
+    function startBurn(px, py){
+      burning = true;
+      const pr = paper.getBoundingClientRect();
+      const sr = scene.getBoundingClientRect();
+      const bx = px - pr.left, by = py - pr.top;
+      ember.style.left = (pr.left - sr.left + bx) + 'px';
+      ember.style.top = (pr.top - sr.top + by) + 'px';
+      ember.style.opacity = 1;
+      title.textContent = '명부가 타오른다…';
+      const maxR = Math.hypot(Math.max(bx, pr.width-bx), Math.max(by, pr.height-by)) + 30;
+      let r = 4;
+      const iv = setInterval(()=>{
+        r += maxR / 55;
+        const mask = `radial-gradient(circle at ${bx}px ${by}px, transparent ${r}px, rgba(0,0,0,.9) ${r+8}px, black ${r+26}px)`;
+        paper.style.webkitMaskImage = mask;
+        paper.style.maskImage = mask;
+        ember.style.width = ember.style.height = (r*2) + 'px';
+        if(Math.random() < .6) tone(90 + Math.random()*260, .05, 'sawtooth', .05);
+        if(Math.random() < .3) buzz(14);
+        if(r >= maxR){
+          clearInterval(iv);
+          paper.style.display = 'none';
+          ember.style.transition = 'opacity 1s'; ember.style.opacity = 0;
+          match.classList.remove('lit');
+          doneAct = true;
+          sfx.cheer();
+          title.textContent = '서른일곱 명의 이름이, 재가 되어 사라졌다.';
+          title.classList.add('done');
+          setTimeout(res, 1800);
+        }
+      }, 60);
+    }
+  });
+}
 </script>
 </body>
 </html>
