@@ -538,6 +538,31 @@ input[type=range]#t-range{
 .media-frame.in-paper img{border-color:#8a6a3a;filter:sepia(.35) contrast(1.02)}
 .hist-card .media-frame{margin:0;padding:12px 12px 0}
 
+/* ---------- PC(넓은 화면) 대응 ----------
+   모바일(스마트폰)에서는 기존 크기 그대로,
+   PC·태블릿 가로에서는 화면 크기에 맞춰 앱 전체를 확대한다. */
+@media (min-width: 900px){
+  #app{
+    zoom: 1.35;
+    height: calc(100dvh / 1.35);
+    border-left: 1px solid rgba(201,162,75,.25);
+    border-right: 1px solid rgba(201,162,75,.25);
+    box-shadow: 0 0 90px rgba(0,0,0,.8);
+  }
+}
+@media (min-width: 1500px){
+  #app{
+    zoom: 1.6;
+    height: calc(100dvh / 1.6);
+  }
+}
+@media (min-width: 1900px){
+  #app{
+    zoom: 1.85;
+    height: calc(100dvh / 1.85);
+  }
+}
+
 /* 접근성 · 모션 축소 */
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
