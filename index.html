@@ -705,6 +705,25 @@ input[type=range]#t-range{
 }
 .match.lit .flame{display:block;animation:flick .12s infinite alternate}
 @keyframes flick{from{transform:scale(1) rotate(-3deg)}to{transform:scale(1.12,1.28) rotate(3deg)}}
+.burn-canvas{position:absolute;pointer-events:none;z-index:2}
+.spark{
+  position:absolute;width:5px;height:5px;border-radius:50%;pointer-events:none;z-index:4;
+  background:radial-gradient(circle,#ffe9a8,#ff8a2a 60%,transparent);
+  animation:sparkFly .9s ease-out forwards;
+}
+@keyframes sparkFly{
+  from{transform:translate(0,0) scale(1);opacity:1}
+  to{transform:translate(var(--dx),var(--dy)) scale(.3);opacity:0}
+}
+.smoke{
+  position:absolute;width:28px;height:28px;border-radius:50%;pointer-events:none;z-index:1;
+  background:radial-gradient(circle, rgba(125,112,100,.4), transparent 70%);filter:blur(4px);
+  animation:smokeUp 1.9s ease-out forwards;
+}
+@keyframes smokeUp{
+  from{transform:translate(-50%,-50%) scale(.6);opacity:.75}
+  to{transform:translate(-50%,-160%) scale(1.7);opacity:0}
+}
 .strike-strip{
   position:absolute;right:10px;bottom:12px;width:150px;height:30px;border-radius:3px;
   background:
@@ -716,6 +735,57 @@ input[type=range]#t-range{
   content:"성냥을 여기 문질러라";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font-size:10px;color:rgba(233,217,174,.55);letter-spacing:.1em;
 }
+
+/* ---------- 답장 팝업 ---------- */
+#reply-modal{
+  position:fixed;inset:0;z-index:65;display:none;align-items:flex-start;justify-content:center;
+  background:rgba(8,4,2,.92);backdrop-filter:blur(3px);padding:9vh 20px 20px;
+}
+#reply-modal.on{display:flex}
+#reply-modal .rm-box{
+  width:min(92vw,420px);background:rgba(23,14,8,.97);
+  border:1px solid rgba(201,162,75,.5);border-radius:4px;padding:20px 18px;
+  box-shadow:0 16px 40px rgba(0,0,0,.7);animation:fadeIn .4s;
+}
+#reply-modal .r-prompt{
+  font-size:13.5px;line-height:1.9;color:rgba(233,217,174,.9);margin-bottom:12px;word-break:keep-all;
+}
+#reply-modal textarea{
+  width:100%;min-height:80px;padding:12px;font-family:'Nanum Myeongjo',serif;font-size:16px;
+  background:rgba(233,217,174,.07);border:1px solid rgba(233,217,174,.35);border-radius:2px;
+  color:var(--paper);line-height:1.8;outline:none;resize:none;
+}
+#reply-modal textarea:focus{border-color:var(--gold)}
+#reply-modal .morse-send{text-align:center}
+
+/* 후일담·기록 화면 */
+.center-col{justify-content:center}
+#scr-epilogue .narr-block{min-height:0;text-align:center}
+#scr-record .end-credit{margin-top:22px}
+
+/* ---------- 전시 안내판 ---------- */
+.sign-plaque{
+  position:relative;background:linear-gradient(160deg,#3d3527,#231e14);
+  border:2px solid #8a744a;border-radius:4px;padding:18px 16px;
+  box-shadow:inset 0 0 24px rgba(0,0,0,.55), 0 10px 26px rgba(0,0,0,.55);
+}
+.sign-plaque::before,.sign-plaque::after{
+  content:"";position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, #d8c491, #6d5732);
+  box-shadow:0 1px 2px rgba(0,0,0,.7);
+}
+.sign-plaque::before{top:7px;left:7px}
+.sign-plaque::after{bottom:7px;right:7px}
+.sp-head{
+  font-family:'Nanum Gothic Coding',monospace;font-size:11px;letter-spacing:.45em;
+  color:#c9b280;text-align:center;border-bottom:1px solid rgba(201,178,128,.4);
+  padding-bottom:9px;margin-bottom:13px;
+}
+.sp-body{
+  font-family:'Nanum Myeongjo',serif;font-weight:700;font-size:15px;line-height:2.05;
+  color:#e8dcba;white-space:pre-wrap;word-break:keep-all;min-height:60px;
+}
+#sign-after{min-height:0;padding:20px 6px 0}
 
 /* 접근성 · 모션 축소 */
 @media (prefers-reduced-motion: reduce){
@@ -790,16 +860,19 @@ const CONFIG = {
 
   /* 프롤로그 — type: 'narr'(민우의 독백) / 'tg'(은우의 전보) */
   prologue: [
-    { type:'narr', fx:'shake', image:"images/prologue-sign.jpg",   /* 입구 전시 안내판 사진 */
-      text:"2026년 여름, 목포.\n\n유달산 아래 붉은 벽돌 건물, 목포근대역사관 1관. 입구의 전시 안내판에 눈이 갔다.\n\n「…당시 영사관에는 본국과 소식을 주고받던 전신실(電信室)이 있었으며, 그 배선의 흔적은 지금도 건물 벽 속에 남아 있다.」\n\n그 문장을 읽는 순간 ― 주머니 속 스마트폰이 미친 듯이 떨리기 시작했다." },
+    { type:'narr', btn:'전시 안내판 보기',
+      text:"2026년 여름, 목포.\n\n유달산 아래 붉은 벽돌 건물, 목포근대역사관 1관.\n\n입구 옆, 세월에 바랜 전시 안내판 하나가 눈에 들어왔다." },
+    { type:'sign', image:"images/prologue-sign.jpg",   /* 입구 전시 안내판 사진 */
+      sign:"당시 영사관에는 본국과 소식을 주고받던 전신실이 있었으며, 그 배선의 흔적은 지금도 건물 벽 속에 남아 있다.",
+      after:"그 문장을 읽는 순간 ― 주머니 속 스마트폰이 미친 듯이 떨리기 시작했다." },
     { type:'narr', fx:'shake-soft', text:"안테나가 사라졌다. 와이파이도, 데이터도 먹통.\n\n대신 화면에는 처음 보는 주파수 하나가 잡혀 있었다. 마치 벽 속의 낡은 구리선이 백 년 동안 붙들고 있던 신호를, 지금 막 내 전화기에 흘려보내는 것처럼.\n\n뚜… 뚜뚜… 뚜―\n\n…모스 부호다." },
     { type:'narr', text:"그때, 화면이 저절로 바뀌더니 오래된 라디오처럼 생긴 다이얼 하나가 떠올랐다.\n\n신호가 잡힐 듯 말 듯 흩어진다. 다이얼을 돌려, 소리가 가장 또렷해지는 주파수를 직접 찾아야 한다." },
     { type:'tuner' },
     { type:'tg', text:`― 누구든, 이 신호를 받는 이여.\n\n여기는 1920년 ${_mm}월 ${_dd}일 밤, 목포일본영사관 전신실.\n나는 이곳에서 전신 서기로 일하는 조선인, 은우라 하오.\n\n…그대의 달력도, 오늘과 같은 날짜를 가리키고 있소? 같은 날의 밤이기에, 이 신호가 그대에게 닿은 것이오.` },
     { type:'tg', image:"images/prologue-mokpo1920.jpg",   /* 1920년대 목포 시가지 흑백 사진 */
-      text:"오늘 낮, 순사들이 청년 자명단의 동지 황(黃)형을 끌고 갔소.\n\n놈들의 밀실 금고엔 목포 독립운동가 서른일곱 명의 이름이 적힌 「검거 명부」가 잠들어 있고, 내일 새벽 일제히 검거가 시작된다 하오.\n\n오늘 밤이… 명부를 없앨 마지막 기회요." },
+      text:"오늘 낮, 순사들이 청년 자명단의 동지 황형을 끌고 갔소.\n\n놈들의 밀실 금고엔 목포 독립운동가 서른일곱 명의 이름이 적힌 「검거 명부」가 잠들어 있고, 내일 새벽 일제히 검거가 시작된다 하오.\n\n오늘 밤이… 명부를 없앨 마지막 기회요." },
     { type:'tg', text:"허나 나는 감시받는 몸. 전신실을 오래 비우면 곧 의심을 사오.\n\n밀실을 여는 암호는, 이 건물을 지은 이가 벽돌과 벽난로와 물건들 곳곳에 흩어 숨겨 두었다 들었소.\n\n…그대의 시대에도, 이 건물은 그 자리에 그대로 서 있지 않소?" },
-    { type:'tg', text:"그렇다면 그대가 나의 눈이 되어 주시오.\n\n벽 속 구리선은 백 년이 지나도 그 자리에 있고, 벽돌 또한 변하지 않는 법. 지금 이 전신기와 그대의 기계는 같은 선(線)으로 이어져 있소.\n\n그대가 그 시대에서 찾아낸 암호를 보내 주면, 1920년의 내가 밀실의 자물쇠를 하나씩 열겠소." },
+    { type:'tg', text:"그렇다면 그대가 나의 눈이 되어 주시오.\n\n벽 속 구리선은 백 년이 지나도 그 자리에 있고, 벽돌 또한 변하지 않는 법. 지금 이 전신기와 그대의 기계는 같은 선으로 이어져 있소.\n\n그대가 그 시대에서 찾아낸 암호를 보내 주면, 1920년의 내가 밀실의 자물쇠를 하나씩 열겠소." },
     { type:'narr', text:"믿을 수 없는 이야기였다.\n\n하지만 신호의 발신 좌표는 정확히, 지금 내가 서 있는 이 건물을 가리키고 있었다.\n\n나는 떨리는 손으로, 답신 버튼을 눌렀다." }
   ],
 
@@ -842,7 +915,7 @@ const CONFIG = {
         "벽난로가 있는 방의 전시 패널에서 '개항'과 관련된 옛 관청 이름을 찾아보세요.",
         "다섯 글자 관청 이름이에요. '무'로 시작합니다."
       ],
-      briefing: "훌륭하오! 첫 자물쇠가 열리는 소리를 들었소.\n\n다음 단서는 1층, 영사(領事)의 방이오. 벽난로 위에 커다란 거울이 걸려 있는데, 놈들은 매일 그 앞에서 옷깃을 여미면서도 거울이 품은 비밀은 모르오.\n\n그대의 시대엔 그 거울에 백 년의 먼지가 앉아 있을 것이오. 먼지를 닦아내면 글자가 드러날 터 ― 다만 거울 글씨는 좌우가 뒤집혀 있으니, 침착하게 읽으시오.",
+      briefing: "훌륭하오! 첫 자물쇠가 열리는 소리를 들었소.\n\n다음 단서는 1층, 영사의 방이오. 벽난로 위에 커다란 거울이 걸려 있는데, 놈들은 매일 그 앞에서 옷깃을 여미면서도 거울이 품은 비밀은 모르오.\n\n그대의 시대엔 그 거울에 백 년의 먼지가 앉아 있을 것이오. 먼지를 닦아내면 글자가 드러날 터 ― 다만 거울 글씨는 좌우가 뒤집혀 있으니, 침착하게 읽으시오.",
       history: {
         title: "역사 노트 ② 목포 개항과 무안감리서",
         image: "images/2-history.jpg",   /* 개항 당시 목포항 사진 */
@@ -1071,7 +1144,7 @@ function buildScreens(){
     <button class="btn" id="btn-start">임무 시작</button>
     <button class="btn ghost" id="btn-howto">게임 방법 · 관람 예절</button>
     <div class="small-note" id="howto" style="display:none">
-      ① 각 막(幕)의 문제는 <b>실제 전시물</b>을 관찰해야 풀 수 있어요.<br>
+      ① 각 막의 문제는 <b>실제 전시물</b>을 관찰해야 풀 수 있어요.<br>
       ② 막힐 땐 힌트를 하나씩 열 수 있어요. (총 3개)<br>
       ③ 역사관 안에서는 <b>조용히 걷고, 전시물을 손대지 않아요.</b><br>
       ④ 야외·방공호 이동 시 주변과 발밑을 꼭 살펴 주세요.
@@ -1083,9 +1156,16 @@ function buildScreens(){
   pro.className = 'screen'; pro.id = 'scr-prologue';
   pro.innerHTML = `
     <div class="narr-block" id="pro-narr" style="display:none"></div>
+    <div id="pro-sign" style="display:none">
+      <div class="sign-plaque">
+        <div class="sp-head">전 시 안 내</div>
+        <div class="sp-body" id="sign-body"></div>
+      </div>
+      <div class="narr-block" id="sign-after"></div>
+    </div>
     <div id="pro-tuner" style="display:none">
       <div class="tuner">
-        <div class="t-label">未知 信號 · 주파수 동조 장치</div>
+        <div class="t-label">미지의 신호 · 주파수 동조 장치</div>
         <div class="t-freq"><span id="t-val">1900.00</span> <small>kHz</small></div>
         <div class="t-meter"><div id="t-fill"></div></div>
         <input type="range" id="t-range" min="190000" max="194000" value="190000">
@@ -1095,9 +1175,9 @@ function buildScreens(){
       <button class="btn gold" id="t-done" style="display:none">해독된 전보 확인</button>
     </div>
     <div class="telegram" id="pro-tg" style="display:none">
-      <div class="tg-head"><span>電報 · 自動解讀</span><span class="secret">極秘</span></div>
+      <div class="tg-head"><span>전보 · 자동해독</span><span class="secret">극비</span></div>
       <div class="tg-body" id="pro-body"></div>
-      <div class="tg-sign">― 발신 : 목포일본영사관 電信室, 은우</div>
+      <div class="tg-sign">― 발신 : 목포일본영사관 전신실, 은우</div>
     </div>
     <div class="media-frame" id="pro-media"></div>
     <button class="btn gold" id="btn-pro-next" style="visibility:hidden">…</button>`;
@@ -1109,7 +1189,7 @@ function buildScreens(){
   brief.innerHTML = `
     <div class="stage-band"><span class="no" id="brief-no">제1막</span><h2 id="brief-title"></h2></div>
     <div class="telegram">
-      <div class="tg-head"><span>作戰 交信 · 1920 → 오늘</span><span class="secret">極秘</span></div>
+      <div class="tg-head"><span>작전 교신 · 1920 → 오늘</span><span class="secret">극비</span></div>
       <div class="tg-body" id="brief-body"></div>
       <div class="tg-sign">― 은우</div>
     </div>
@@ -1160,7 +1240,7 @@ function buildScreens(){
   inter.innerHTML = `
     <div class="divider"></div>
     <div class="telegram">
-      <div class="tg-head"><span>電報 · 木浦局</span><span class="secret">極秘</span></div>
+      <div class="tg-head"><span>전보 · 목포국</span><span class="secret">극비</span></div>
       <div class="tg-body" id="inter-body"></div>
       <div class="tg-sign">― 은우</div>
     </div>
@@ -1175,17 +1255,44 @@ function buildScreens(){
     <div class="media-frame" id="end-video"></div>
     <div class="end-light"></div>
     <div class="end-title">${CONFIG.ending.title}</div>
-    <div class="end-time" id="end-time"></div>
-    <div><span class="end-rank" id="end-rank"></span></div>
     <div class="telegram">
-      <div class="tg-head"><span>最後의 電報</span><span>1920 → 오늘</span></div>
+      <div class="tg-head"><span>마지막 전보</span><span>1920 → 오늘</span></div>
       <div class="tg-body" id="end-body"></div>
       <div class="tg-sign">${CONFIG.ending.sign}</div>
     </div>
-    <div id="end-reply"></div>
+    <button class="btn gold" id="btn-end-reply" style="visibility:hidden">은우에게 답장 보내기</button>`;
+  app.appendChild(end);
+
+  /* --- 후일담 --- */
+  const epi = document.createElement('div');
+  epi.className = 'screen center-col'; epi.id = 'scr-epilogue';
+  epi.innerHTML = `
+    <div class="narr-block" id="epi-body"></div>
+    <button class="btn" id="btn-epi-next" style="visibility:hidden">임무 기록 확인</button>`;
+  app.appendChild(epi);
+
+  /* --- 임무 기록 --- */
+  const rec = document.createElement('div');
+  rec.className = 'screen center-col'; rec.id = 'scr-record';
+  rec.innerHTML = `
+    <div class="end-title" style="text-align:center">임무 기록</div>
+    <div style="text-align:center;margin:8px 0 4px"><span class="end-rank" id="end-rank"></span></div>
+    <div class="end-time" id="end-time" style="text-align:center"></div>
     <div class="end-credit">${CONFIG.ending.credit}</div>
     <button class="btn ghost" id="btn-retry">처음부터 다시 하기</button>`;
-  app.appendChild(end);
+  app.appendChild(rec);
+
+  /* --- 답장 팝업 --- */
+  const modal = document.createElement('div');
+  modal.id = 'reply-modal';
+  modal.innerHTML = `
+    <div class="rm-box">
+      <div class="r-prompt">${CONFIG.ending.replyPrompt}</div>
+      <textarea maxlength="100" placeholder="예) 네, 당신들 덕분에 평화롭습니다. 잊지 않을게요."></textarea>
+      <button class="btn gold" id="btn-send">전신기로 답장 송신</button>
+      <div class="morse-send" id="morse-line"></div>
+    </div>`;
+  document.body.appendChild(modal);
 }
 
 /* ================================================================
@@ -1229,25 +1336,34 @@ async function playPrologue(){
   for(let i=0;i<scenes.length;i++){
     const sc = scenes[i];
     btn.style.visibility = 'hidden';
+    narr.style.display = 'none'; tg.style.display = 'none';
+    $('#pro-sign').style.display = 'none';
     startFx(sc.fx);
     loadMedia($('#pro-media'), sc.image);
     if(sc.type === 'tuner'){
-      narr.style.display = 'none'; tg.style.display = 'none';
       $('#pro-tuner').style.display = 'block';
       await runTuner();
       $('#pro-tuner').style.display = 'none';
       continue;
     }
-    if(sc.type === 'narr'){
-      tg.style.display = 'none'; narr.style.display = 'block';
+    if(sc.type === 'sign'){
+      /* 안내판을 읽는다 → 다 읽는 순간, 폰이 떨리기 시작한다 */
+      $('#pro-sign').style.display = 'block';
+      $('#sign-after').innerHTML = '';
+      await typewrite($('#sign-body'), sc.sign, 40);
+      await new Promise(r=>setTimeout(r, 550));
+      startFx('shake');
+      await typewrite($('#sign-after'), sc.after, 30);
+    } else if(sc.type === 'narr'){
+      narr.style.display = 'block';
       await typewrite(narr, sc.text, 30);
     } else {
-      narr.style.display = 'none'; tg.style.display = 'block';
+      tg.style.display = 'block';
       await typewrite(body, sc.text, 34);
     }
     const last = i === scenes.length - 1;
     btn.textContent = last ? '…돕겠습니다. 무엇을 찾으면 됩니까?'
-                    : (sc.type === 'narr' ? '계속' : '다음 전보 수신');
+                    : (sc.btn || (sc.type === 'tg' ? '다음 전보 수신' : '계속'));
     btn.style.visibility = 'visible';
     await waitClick(btn);
   }
@@ -1314,7 +1430,7 @@ function runTuner(){
         await new Promise(r=>setTimeout(r, 70));
       }
       await new Promise(r=>setTimeout(r, 350));
-      dec.textContent = '解讀中……… 완료. 문장이 떠오른다.';
+      dec.textContent = '해독 중……… 완료. 문장이 떠오른다.';
       sfx.ok();
       done.style.display = 'block';
       done.addEventListener('click', function h(){
@@ -1516,9 +1632,9 @@ function mgScratch(i){
 /* --- 태극기 SVG (큰 깃발·폭죽 공용) --- */
 const FLAG_SVG = `<svg viewBox="0 0 150 100" xmlns="http://www.w3.org/2000/svg" aria-label="태극기">
         <rect width="150" height="100" rx="3" fill="#fdfaf0"/>
-        <g transform="translate(75,50) rotate(-33.69)">
+        <g transform="translate(75,50) rotate(33.69)">
           <circle r="24" fill="#0047A0"/>
-          <path d="M -24 0 A 24 24 0 0 1 24 0 A 12 12 0 0 1 0 0 A 12 12 0 0 0 -24 0 Z" fill="#CD2E3A"/>
+          <path d="M -24 0 A 24 24 0 0 1 24 0 A 12 12 0 0 0 0 0 A 12 12 0 0 1 -24 0 Z" fill="#CD2E3A"/>
         </g>
         <g fill="#1c1c1c">
           <g transform="translate(40,26.7) rotate(-56.31)">
@@ -1730,40 +1846,57 @@ async function finishGame(){
     const score = 100 - hintsUsed*7 - state.lockouts*18 - wrongTotal*3;
     const rank = score >= 85 ? '특급 밀정' : score >= 60 ? '일급 밀정' : '견습 밀정';
     $('#end-rank').textContent = rank;
-    loadMedia($('#end-video'), CONFIG.media && CONFIG.media.endingVideo, 'video');
     $('#end-time').textContent = `탈출 기록 ${elapsed()} · 힌트 ${hintsUsed}개 · 발각 위기 ${state.lockouts}회`;
+    loadMedia($('#end-video'), CONFIG.media && CONFIG.media.endingVideo, 'video');
+    /* ① 마지막 전보 */
     show('#scr-end');
     sfx.ok();
     await typewrite($('#end-body'), CONFIG.ending.message, 42);
-    /* 100년 뒤의 답장 */
-    const rp = $('#end-reply');
-    rp.innerHTML = `
-      <div class="reply-box">
-        <div class="r-prompt">${CONFIG.ending.replyPrompt}</div>
-        <textarea maxlength="100" placeholder="예) 네, 당신들 덕분에 평화롭습니다. 잊지 않을게요."></textarea>
-        <button class="btn gold" id="btn-send">전신기로 답장 송신</button>
-        <div class="morse-send" id="morse-line"></div>
-      </div>`;
-    $('#btn-send').addEventListener('click', async ()=>{
-      const ta = rp.querySelector('textarea');
+    const rbtn = $('#btn-end-reply');
+    rbtn.style.visibility = 'visible';
+    await waitClick(rbtn);
+    /* ② 답장 팝업 */
+    await replyModal();
+    /* ③ 후일담 */
+    show('#scr-epilogue');
+    await typewrite($('#epi-body'), CONFIG.ending.epilogue, 45);
+    const ebtn = $('#btn-epi-next');
+    ebtn.style.visibility = 'visible';
+    await waitClick(ebtn);
+    /* ④ 임무 기록 */
+    show('#scr-record');
+    sfx.cheer();
+  });
+}
+
+/* ---------- 답장 팝업 ---------- */
+function replyModal(){
+  return new Promise(res=>{
+    const modal = $('#reply-modal');
+    const ta = modal.querySelector('textarea');
+    const btn = $('#btn-send');
+    const line = $('#morse-line');
+    ta.value = ''; ta.disabled = false;
+    btn.disabled = false; btn.style.opacity = 1;
+    line.textContent = '';
+    modal.classList.add('on');
+    setTimeout(()=>ta.focus(), 350);
+    btn.onclick = async ()=>{
       if(!ta.value.trim()){ ta.focus(); return; }
-      ta.disabled = true; $('#btn-send').disabled = true; $('#btn-send').style.opacity=.4;
-      /* 모스 송신 연출 */
-      const line = $('#morse-line');
+      ta.disabled = true; btn.disabled = true; btn.style.opacity = .4;
       const code = ['·','―','·','·','―','―','·','―','·','·','·','―'];
-      for(let k=0;k<code.length;k++){
-        line.textContent += code[k] + ' ';
-        tone(code[k]==='·' ? 880 : 660, code[k]==='·' ? .07 : .18, 'sine', .1);
+      for(const c of code){
+        line.textContent += c + ' ';
+        tone(c === '·' ? 880 : 660, c === '·' ? .07 : .18, 'sine', .1);
         buzz(30);
         await new Promise(r=>setTimeout(r, 170));
       }
-      line.textContent += '  送信 完了';
+      line.textContent += '  송신 완료';
       sfx.found();
-      const ep = document.createElement('div');
-      ep.className = 'epilogue';
-      rp.appendChild(ep);
-      await typewrite(ep, CONFIG.ending.epilogue, 45);
-    });
+      await new Promise(r=>setTimeout(r, 1100));
+      modal.classList.remove('on');
+      res();
+    };
   });
 }
 
@@ -1886,7 +2019,7 @@ function actBrick(){
             <svg viewBox="0 0 104 70" width="104" height="70">
               <path d="M12 56 L34 40 L30 22 L56 26 L74 14 L88 20" fill="none" stroke="#8a3524" stroke-width="2.5" stroke-dasharray="5 4"/>
               <text x="88" y="16" font-size="12" fill="#8a3524" font-weight="bold">✕</text>
-              <text x="52" y="64" font-size="9" fill="#6b4f2a" text-anchor="middle" letter-spacing="2">密室의 地圖</text>
+              <text x="52" y="64" font-size="9" fill="#6b4f2a" text-anchor="middle" letter-spacing="2">밀실의 지도</text>
             </svg>
           </div>
           <div class="loose-brick" id="loose-brick"></div>
@@ -1993,7 +2126,7 @@ function actDial(){
         tone(140,.4,'square',.12); tone(90,.6,'sine',.1,.25); buzz([120,60,200]);
         title.textContent = '철커덩! 금고가 열렸다 ― 「검거 명부」를 손에 넣었다!';
         title.classList.add('done');
-        step.innerHTML = '📜 極秘 · 檢擧 名簿';
+        step.innerHTML = '📜 극비 · 검거 명부';
         setTimeout(res, 1500);
       }
     }
@@ -2012,8 +2145,8 @@ function actBurn(){
         <div class="act-title">은우 ― 「이제 이 명부만 없으면, 아무도 잡혀가지 않소.」<br>성냥을 마찰판에 문질러 불을 붙여라!</div>
         <div class="burn-scene" id="burn-scene">
           <div class="burn-paper" id="burn-paper">
-            <div class="bp-title">檢擧 名簿</div>
-            <div class="bp-names">${names.map(n=>'一. '+n).join('<br>')}<br>外 二十五名</div>
+            <div class="bp-title">검거 명부</div>
+            <div class="bp-names">${names.map(n=>'· '+n).join('<br>')}<br>외 25명</div>
           </div>
           <div class="ember" id="ember"></div>
           <div class="match" id="match">
@@ -2083,32 +2216,112 @@ function actBurn(){
       const pr = paper.getBoundingClientRect();
       const sr = scene.getBoundingClientRect();
       const bx = px - pr.left, by = py - pr.top;
+      title.textContent = '명부가 타오른다…';
+
+      /* 숯 테두리 캔버스 : 종이 위에 정확히 겹치게 배치 */
+      const cv = document.createElement('canvas');
+      cv.className = 'burn-canvas';
+      cv.width = Math.round(pr.width); cv.height = Math.round(pr.height);
+      cv.style.left = (pr.left - sr.left) + 'px';
+      cv.style.top = (pr.top - sr.top) + 'px';
+      cv.style.width = pr.width + 'px'; cv.style.height = pr.height + 'px';
+      scene.appendChild(cv);
+      const ctx = cv.getContext && cv.getContext('2d');
+
+      /* 타기 직전 그을음(스코치) 레이어 : 종이 안쪽에서 미리 갈변 */
+      const scorch = document.createElement('div');
+      scorch.style.cssText = 'position:absolute;inset:0;pointer-events:none;border-radius:2px;';
+      paper.appendChild(scorch);
+
+      /* 잉걸 링은 은은하게만 */
       ember.style.left = (pr.left - sr.left + bx) + 'px';
       ember.style.top = (pr.top - sr.top + by) + 'px';
-      ember.style.opacity = 1;
-      title.textContent = '명부가 타오른다…';
-      const maxR = Math.hypot(Math.max(bx, pr.width-bx), Math.max(by, pr.height-by)) + 30;
-      let r = 4;
+      ember.style.opacity = .55;
+
+      function spark(x, y){
+        const s = document.createElement('div');
+        s.className = 'spark';
+        s.style.left = (pr.left - sr.left + x) + 'px';
+        s.style.top = (pr.top - sr.top + y) + 'px';
+        s.style.setProperty('--dx', (Math.random()*46 - 23) + 'px');
+        s.style.setProperty('--dy', -(26 + Math.random()*44) + 'px');
+        scene.appendChild(s);
+        setTimeout(()=>s.remove(), 950);
+      }
+      function smoke(x, y){
+        const s = document.createElement('div');
+        s.className = 'smoke';
+        s.style.left = (pr.left - sr.left + x) + 'px';
+        s.style.top = (pr.top - sr.top + y) + 'px';
+        scene.appendChild(s);
+        setTimeout(()=>s.remove(), 1950);
+      }
+
+      const maxR = Math.hypot(Math.max(bx, pr.width-bx), Math.max(by, pr.height-by)) + 34;
+      let r = 5;
       const iv = setInterval(()=>{
-        r += maxR / 55;
-        const mask = `radial-gradient(circle at ${bx}px ${by}px, transparent ${r}px, rgba(0,0,0,.9) ${r+8}px, black ${r+26}px)`;
+        r += maxR / 78;
+
+        /* ① 종이(글씨) 구멍 : 숯 테두리보다 살짝 안쪽 */
+        const hole = Math.max(0, r - 12);
+        const mask = `radial-gradient(circle at ${bx}px ${by}px, transparent ${hole}px, rgba(0,0,0,.85) ${hole+7}px, black ${hole+18}px)`;
         paper.style.webkitMaskImage = mask;
         paper.style.maskImage = mask;
+
+        /* ② 불길 직전의 갈변 : 테두리 바깥으로 번지는 그을음 */
+        scorch.style.background =
+          `radial-gradient(circle at ${bx}px ${by}px, rgba(25,12,4,.9) ${r}px, rgba(70,34,10,.55) ${r+20}px, rgba(110,60,18,.25) ${r+40}px, transparent ${r+64}px)`;
+
+        /* ③ 캔버스에 울퉁불퉁한 숯·불꽃 테두리를 찍는다 */
+        if(ctx){
+          for(let k=0;k<26;k++){
+            const a = Math.random() * Math.PI * 2;
+            /* 주황 불꽃 알갱이 (테두리 바깥쪽) */
+            let rr = r + Math.random()*7;
+            ctx.fillStyle = `rgba(${230+Math.random()*25},${90+Math.random()*70},20,${.25+Math.random()*.3})`;
+            ctx.beginPath();
+            ctx.arc(bx + Math.cos(a)*rr, by + Math.sin(a)*rr, 3 + Math.random()*6, 0, 7);
+            ctx.fill();
+            /* 검은 숯 알갱이 (테두리 안쪽) */
+            rr = r - 3 - Math.random()*9;
+            ctx.fillStyle = `rgba(${10+Math.random()*20},${6+Math.random()*10},4,${.75+Math.random()*.25})`;
+            ctx.beginPath();
+            ctx.arc(bx + Math.cos(a)*rr, by + Math.sin(a)*rr, 4 + Math.random()*8, 0, 7);
+            ctx.fill();
+          }
+          /* 안쪽은 지워서 배경(재)이 드러나게 → 숯 '테두리 띠'만 남는다 */
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.beginPath();
+          ctx.arc(bx, by, Math.max(0, r - 16), 0, 7);
+          ctx.fill();
+          ctx.globalCompositeOperation = 'source-over';
+        }
+
+        /* ④ 불티·연기·잉걸 */
+        const ea = Math.random() * Math.PI * 2;
+        if(Math.random() < .8) spark(bx + Math.cos(ea)*r, by + Math.sin(ea)*r);
+        if(Math.random() < .3) smoke(bx + Math.cos(ea)*r, by + Math.sin(ea)*r - 8);
         ember.style.width = ember.style.height = (r*2) + 'px';
-        if(Math.random() < .6) tone(90 + Math.random()*260, .05, 'sawtooth', .05);
+        ember.style.opacity = .35 + Math.random()*.3;
+
+        /* ⑤ 타닥타닥 */
+        if(Math.random() < .7) tone(90 + Math.random()*260, .05, 'sawtooth', .05);
+        if(Math.random() < .18) tone(320 + Math.random()*600, .03, 'square', .08);
         if(Math.random() < .3) buzz(14);
+
         if(r >= maxR){
           clearInterval(iv);
           paper.style.display = 'none';
+          if(ctx){ cv.style.transition = 'opacity 1.2s'; cv.style.opacity = 0; }
           ember.style.transition = 'opacity 1s'; ember.style.opacity = 0;
           match.classList.remove('lit');
           doneAct = true;
           sfx.cheer();
           title.textContent = '서른일곱 명의 이름이, 재가 되어 사라졌다.';
           title.classList.add('done');
-          setTimeout(res, 1800);
+          setTimeout(res, 1900);
         }
-      }, 60);
+      }, 50);
     }
   });
 }
